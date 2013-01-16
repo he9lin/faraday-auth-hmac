@@ -3,6 +3,8 @@
 
 Enables signing your requests (from Faraday) with AuthHMAC.
 
+**Supports faraday ~> 0.8.1**
+
 ## Usage
 
 ``` ruby
