@@ -42,40 +42,40 @@ module Faraday
       # Modified CanonicalString to know how to pull from the Faraday-specific
       # env hash.
       class CanonicalString < ::AuthHMAC::CanonicalString
-        
+
         def request_method(request)
           request[:method].to_s.upcase
         end
-        
+
         def request_body(request)
           request[:body].to_s
         end
-        
+
         def request_path(request)
           request[:url].path
         end
-        
+
         def request_path(request, authenticate_referrer)
           return super if authenticate_referrer
           request[:url].path
         end
-        
+
         def headers(request)
           request[:request_headers]
         end
-        
+
       end
 
       class << self
         attr_accessor :keys, :options
       end
       self.keys     = {}
-      self.options  = {:service_id => "FaradayHMAC", :signature => CanonicalString}
+      self.options  = { :signature => CanonicalString }
 
       def self.auth
         ::AuthHMAC.new(keys, options)
       end
-      
+
       def auth
         self.class.auth
       end
