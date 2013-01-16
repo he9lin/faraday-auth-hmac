@@ -3,7 +3,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), 'helper'))
 class AuthHMACMiddlewareTest < Faraday::TestCase
   def setup
     Faraday::Request::AuthHMAC.keys.clear
-    @access_id, @secret = "id", "secret"
+    @access_id, @secret = "access_id", "secret"
     @conn = Faraday.new do |req|
       req.request :auth_hmac
       req.adapter :test do |stub|
@@ -19,20 +19,20 @@ class AuthHMACMiddlewareTest < Faraday::TestCase
     response = @conn.post('/echo', { :some => 'data' }, 'content-type' => 'application/x-foo')
     assert_nil response.env[:request_headers]['Authorization']
   end
-  
+
   def test_request_instructed_to_sign_a_request_will_result_in_a_correctly_signed_request
     response = @conn.post('/echo', { :some => 'data' }, 'content-type' => 'application/x-foo') do |r|
-      r.sign! 'access_id', 'secret'
+      r.sign! @access_id, @secret
     end
-    
+
     assert signed?(response.env, @access_id, @secret), "should be signed"
   end
   
   def test_a_signed_request_includes_appropriate_headers
     response = @conn.post('/echo', { :some => 'data' }, 'content-type' => 'application/x-foo') do |r|
-      r.sign! 'access_id', 'secret'
+      r.sign! @access_id, @secret
     end
-    
+
     %w(Authorization Content-MD5 Date).each do |header|
       assert_not_nil response.env[:request_headers][header], "should have #{header} header"
     end
